@@ -1,0 +1,52 @@
+MySQL Cheats
+Reset Password for MYSQL Root if Red Team changes it for you…  (ie. You don’t know your password)
+If using Ubuntu/Debian, type dpkg-reconfigure mysql-server-N.N (where N.N is the version).  Follow the onscreen prompts and congrats, you just saved your database.
+Otherwise, do this (Manual process taken from https://help.ubuntu.com/community/MysqlPasswordReset):
+1.	Stop mysql
+a.	service mysql stop	OR	/etc/init.d/mysql stop
+2.	Start mysql in standalone mode without privileges:
+a.	/usr/sbin/mysqld --skip-grant-tables --skip-networking &
+3.	Start mysql as follows
+a.	mysql -u root
+4.	Do this to change the password
+a.	FLUSH PRIVILEGES;
+b.	SET PASSWORD FOR root@'localhost' = PASSWORD('password');
+c.	UPDATE mysql.user SET Password=PASSWORD('newpwd') WHERE User='root';
+d.	FLUSH PRIVILEGES;
+e.	sudo /etc/init.d/mysql stop
+f.	sudo /etc/init.d/mysql start
+Use mysqldump REGULARLY to backup your database.
+Use history –c to clean your recent commands from Linux history (up arrow).
+IPTables Safety
+Golden rules:
+Iptables is NOT persistent, reboot will clear it.  Typically you have to manually make them persistent, google this.  It varies on distro.  If you break it, rather than asking for a rollback, ask for a reboot.  It costs less points.  Your system will come back up without the iptables breakage.
+Use iptables-save >filename to backup iptables
+Use iptables-restore <filename to restore iptables
+Usually making iptables persistent means adding these iptables-save rules to your /etc/network/ post-up.  Again, google this if/when needed.
+ASSUME THAT LINUX FIREWALLS ARE REVERTED ON EVERY REBOOT UNLESS YOU SPECIFICALLY SAVE THEM AND VERIFY THEY COME BACK AFTER A DELIBERATE REBOOT.
+Web Server – Check for Attacks Easily
+tcpdump dst port 80 | grep POST > postlogs.txt &
+This nice little improvised command will record all POSTS to your web server until you kill it (use ps –ef |grep tcpdump, then kill the PID using kill -9 PID).  You can open another SSH session and do a tail –f postlogs.txt to watch attempts in real time.  Report attempted breaches.  Look for oddities in the post like appended commands, or SQL statements.
+There is also a version that will work on SSL called ssldump.  I am not overly familiar with it, but you should be able to get it easily enough and point it to your ssl keyfile so it can decrypted and inspect SSL packets.
+Windows SysInternals
+Put the entire sysinternals zip on your GITHUB repo.  procexp, autoruns will help you find existing attacks or infections.  Also tcpview is like netstat on steroids for windows and should be used to continuously monitor EVERYTHING.  It WILL save your life if you watch it.  Once you see odd stuff, write down the PID fast as it will time out quickly.  Then go to procexp and look at that PID process (strings, networking etc).  If you suspect foul play, suspend it rather than kill it as this will normally block them getting BACK in.  ?  Mean, but effective.
+Windows Security
+So to Windows, Meterpreter is your biggest threat.  If they get ANY access to a Windows system, then you can guarantee they will MIMICATZ it.  This means that they will INSTANTLY gain access to every password hash for currently logged in users.  If you are accessing Windows boxes with an administrative user, you just got your face pwned – AND they will golden ticket your entire domain – aka, you just lost and have a LOT of repairs to do.  To AVOID this, use NON ADMINISTRATIVE accounts for ALL Windows Systems.  Then use ‘right click, run as administrator’ to run individual apps with elevated privileges as necessary.  This GREATLY reduces your attack surface to this type of attack.
+Also, create an Administrative account (domain and local).  Check it works.  Then rename and disable the default Administrator (local and domain).  Once disabled, create a NEW unprivileged user called ‘Administrator’ with a STRONG password.  Turn audit login events on, and start watching your logs for attempts to access the Administrator account.  Report this to the black team and score points!
+Subnet/Host discovery
+Angry IP Scanner
+
+Inventory all ports
+
+
+Lock down PHPMyAdmin
+Change webserver site configuration for phpmyadmin to bind ONLY to localhost (127.0.0.1).  Then to administer it remotely use an SSH Local Port forward (10000:127.0.0.1:80– this will send 10000 on the client to 80 on the remote server, then point your web browser to http://localhost:10000 and bam, you have PHPMyAdmin over a SSH tunnel).
+Check Internal Network Ports
+For example, typically mysql if located on the web server will not need to be accessible externally on port 3306.  Thus in your mysql.conf you should change the IP binding from 0.0.0.0 to 127.0.0.1.  Be sure to test anything that uses mysql as you may find issues if websites/applications are looking for it on its public IP address.  If you run into these issues you have two options.
+1.	Change web apps to point to localhost
+2.	Use iptables with source IP rules to limit access.
+
+Got Time?  Feeling Cocky?
+Get portspoof and use iptables to point EVERY unused port on your system to portspoof.  Their nmap scans will take FOREVER to complete and you will totally and completely piss off the Red Team beyond belief.  If you REALLY feel like going at it, start blacklisting their IP’s by adding rules to add ALL known red team IP addresses to redirect to port spoof – even if on a valid port.  Careful to timeout these in case the scoring engine changes IP.  I would suggest 10 minute bans.  You can use fail2ban to help manage these, or cron them with an auto-expiry.
+
+
