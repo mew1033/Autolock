@@ -11,6 +11,8 @@ http://superuser.com/questions/714816/turn-off-administrative-share-on-windows-7
 TCPdump Filters:
 http://www.cs.ucr.edu/~marios/ethereal-tcpdump.pdf
 
+IPTABLES flush
+http://stackoverflow.com/questions/13905886/run-command-at-5-seconds-from-now
 
 
 What Rowe put on G-Chat:
