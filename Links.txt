@@ -8,6 +8,9 @@ AD Domain Controller Port requirements including all dynamic ranges:  http://tec
 Turn off Admin share, Win 7:
 http://superuser.com/questions/714816/turn-off-administrative-share-on-windows-7
 
+TCPdump Filters:
+http://www.cs.ucr.edu/~marios/ethereal-tcpdump.pdf
+
 
 
 What Rowe put on G-Chat:
