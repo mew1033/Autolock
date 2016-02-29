@@ -1,0 +1,127 @@
+object-group network admin_network
+ 10.128.144.0 255.255.255.0
+!
+object-group network blog
+ 10.128.146.16 255.255.255.255
+!
+object-group network dbmaestro
+ 10.128.145.10 255.255.255.255
+!
+object-group network dcmaestro
+ 10.128.145.11 255.255.255.255
+!
+object-group network dctrends
+ 10.128.146.14 255.255.255.255
+!
+object-group network dmz_network
+ 10.128.146.0 255.255.255.0
+!
+object-group network ftpmis
+ 10.128.146.12 255.255.255.255
+!
+object-group network imail
+ 10.128.146.15 255.255.255.255
+!
+object-group network internal_network
+ 10.128.145.0 255.255.255.0
+!
+object-group network mailmaestro
+ 10.128.146.10 255.255.255.255
+!
+object-group network owncloud
+ 10.128.145.13 255.255.255.255
+!
+object-group network rdp_dmz_hosts
+ description PUT DMZ RDP HOSTS HERE
+ 10.128.146.15 255.255.255.255
+ 10.128.146.14 255.255.255.255
+ 10.128.146.10 255.255.255.255
+!
+object-group network rdp_int_hosts
+ description PUT INTERNAL RDP HOSTS HERE
+ 10.128.145.18 255.255.255.255
+ 10.128.145.11 255.255.255.255
+!
+object-group network splunk
+ 10.128.145.18 255.255.255.255
+!
+object-group network ssh_dmz_hosts_ext
+ 10.128.146.16 255.255.255.255
+ 10.128.146.12 255.255.255.255
+!
+object-group network ssh_int_hosts_ext
+ 10.128.145.10 255.255.255.255
+!
+object-group network ssh_dmz_hosts
+ description PUT DMZ SSH HOSTS HERE
+ 10.128.146.16 255.255.255.255
+ 10.128.146.11 255.255.255.255
+ 10.128.146.12 255.255.255.255
+ 10.128.146.13 255.255.255.255
+!
+object-group network ssh_int_hosts
+ description PUT INTERNAL SSH HOSTS HERE
+ 10.128.145.10 255.255.255.255
+ 10.128.145.13 255.255.255.255
+!
+object-group network wireless_network
+ 10.128.147.0 255.255.255.0
+!
+object-group network wwwgames
+ 10.128.146.13 255.255.255.255
+!
+object-group network wwwstreams
+ 10.128.146.11 255.255.255.255
+!
+ip access-list extended admin_facing
+ permit udp host 8.8.8.8 eq 53 object-group admin_network
+ permit udp object-group dcmaestro eq 53 object-group admin_network
+ permit udp object-group dctrends eq 53 object-group admin_network
+ permit tcp object-group internal_network eq 3389 object-group admin_network established
+ permit tcp object-group internal_network eq 22 object-group admin_network established
+ permit tcp object-group dmz_network eq 3389 object-group admin_network established
+ permit tcp object-group dmz_network eq 22 object-group admin_network established
+ permit tcp any eq 80 object-group admin_network established
+ permit tcp any eq 443 object-group admin_network established
+ permit tcp object-group ftpmis eq 20 object-group admin_network established
+ permit tcp object-group ftpmis eq 21 object-group admin_network established
+ permit tcp object-group imail eq 110 object-group admin_network established
+ permit ip host 192.168.1.143 object-group admin_network
+ permit tcp any eq 22 object-group admin_network
+ permit tcp any eq 23 object-group admin_network
+ deny ip any any log
+ 
+ip access-list extended dmz_facing
+ permit tcp any object-group imail eq 110
+ permit tcp any object-group blog eq 80
+ permit tcp any object-group blog eq 22
+ permit udp any object-group dctrends eq 53
+ permit udp any eq 53 object-group dctrends
+ permit tcp any object-group wwwstreams eq 80
+ permit tcp any object-group wwwstreams eq 443
+ permit tcp any object-group ftpmis eq 20
+ permit tcp any object-group ftpmis eq 21
+ permit tcp any object-group ftpmis eq 22
+ permit tcp any object-group ftpmis gt 1023
+ permit tcp any object-group wwwgames eq 80
+ permit tcp any object-group wwwgames eq 443
+ permit tcp any object-group mailmaestro eq 25
+ permit tcp any object-group mailmaestro eq 110
+ permit tcp object-group dcmaestro object-group mailmaestro
+ permit udp object-group dcmaestro object-group mailmaestro
+ permit tcp object-group admin_network object-group dmz_network eq 22
+ permit tcp object-group admin_network object-group dmz_network eq 3389
+ deny   ip any any log
+!
+ip access-list extended int_facing
+ permit udp any eq 53 object-group dcmaestro
+ permit udp any object-group dcmaestro eq 53
+ permit tcp any object-group dbmaestro eq 22
+ permit tcp any object-group owncloud eq 80
+ permit tcp object-group admin_network object-group internal_network eq 22
+ permit tcp object-group admin_network object-group internal_network eq 3389
+ permit tcp object-group mailmaestro object-group dcmaestro
+ permit udp object-group mailmaestro object-group dcmaestro
+ permit udp any object-group splunk eq 514
+ deny   ip any any log
+!

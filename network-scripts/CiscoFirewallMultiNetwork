@@ -1,0 +1,121 @@
+Extended IP access list admin_facing
+   10 permit tcp any any established
+   20 permit udp host 8.8.8.8 eq domain any
+		** Any other DNS resolvers here!
+   30 permit udp object-group internal_network eq domain object-group admin_network
+   40 deny ip any any log
+
+Extended IP access list dmz_facing
+   10 permit tcp any any established
+   20 permit object-group mail_server_ext any object-group imail
+   30 permit object-group web_server_ext any object-group blog
+   40 permit object-group dc_ext any object-group dctrends
+   50 permit object-group mail_server_ext any object-group mailmaestro
+   60 permit object-group web_server_ext any object-group wwwstreams
+   70 permit object-group ftp_ext any object-group ftpmis
+   80 permit object-group web_server_ext any object-group wwwgames
+   90 permit tcp object-group admin_network object-group ssh_dmz_hosts eq 22
+   100 permit tcp object-group admin_network object-group rdp_dmz_hosts eq 3389
+   110 deny ip any any log
+
+Extended IP access list int_facing
+   10 permit tcp any any established
+   20 permit object-group db_int any object-group blog
+		**Any other boxes that need database access here!
+   30 permit object-group dc_int object-group admin_network object-group dcmaestro
+   40 permit object-group splunk_int object-group admin_network object-group splunk
+   50 permit object-group splunk_int object-group dmz_network object-group splunk
+   60 permit object-group owncloud_int object-group admin_network object-group internal_network
+   70 permit tcp object-group admin_network object-group rdp_int_hosts eq 3389
+   80 permit tcp object-group admin_network object-group ssh_int_hosts eq 22
+   90 deny ip any any log
+
+Network object group admin_network
+10.128.3.0 255.255.255.0
+
+Network object group blog
+10.128.1.16 255.255.255.255
+
+Service object group db_int
+tcp eq 3306
+
+Network object group dbmaestro
+10.128.2.10 255.255.255.255
+
+Service object group dc_ext
+udp eq domain
+
+Service object group dc_int
+udp eq 88
+tcp eq 88
+tcp eq 135
+udp eq 135
+
+Network object group dcmaestro
+10.128.2.11 255.255.255.255
+
+Network object group dctrends
+10.128.1.14 255.255.255.255
+
+Network object group dmz_network
+10.128.1.0 255.255.255.0
+
+Service object group ftp_ext
+tcp eq ftp
+tcp eq ftp-data
+
+Network object group ftpmis
+10.128.1.12 255.255.255.255
+
+Network object group imail
+10.128.1.15 255.255.255.255
+
+Network object group internal_network
+10.128.2.0 255.255.255.0
+
+Service object group mail_server_ext
+tcp eq smtp
+tcp eq pop3
+tcp eq 143
+
+Network object group mailmaestro
+10.128.1.10 255.255.255.255
+
+Network object group owncloud
+10.128.2.13 255.255.255.255
+
+Service object group owncloud_int
+tcp eq www
+tcp eq 443
+
+Network object group rdp_dmz_hosts
+Description PUT DMZ RDP HOSTS HERE
+
+Network object group rdp_int_hosts
+	** PUT INTERNAL RDP HOSTS HOERE
+
+Network object group splunk
+10.128.2.18 255.255.255.255
+
+Service object group splunk_int
+tcp eq 8000
+tcp eq 9997
+
+Network object group ssh_dmz_hosts
+	** PUT DMZ SSH HOSTS HERE
+
+Network object group ssh_int_hosts
+	** PUT INTERNAL SSH HOSTS HERE
+
+Service object group web_server_ext
+tcp eq www
+tcp eq 443
+
+Network object group wireless_network
+10.128.1.0 255.255.255.0
+
+Network object group wwwgames
+10.128.1.13 255.255.255.255
+
+Network object group wwwstreams
+10.128.1.11 255.255.255.255

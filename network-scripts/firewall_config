@@ -1,0 +1,129 @@
+object-group network admin_network
+ 10.128.3.0 255.255.255.0
+!
+object-group network blog
+ 10.128.1.16 255.255.255.255
+!
+object-group service db_int
+ tcp eq 3306
+!
+object-group network dbmaestro
+ 10.128.2.10 255.255.255.255
+!
+object-group service dc_ext
+ description DOUBLE CHECK THE DC EXTERNAL PORTS!
+ udp eq domain
+!
+object-group service dc_int
+ udp eq 88
+ tcp eq 88
+ tcp eq 135
+ udp eq 135
+ tcp eq 464
+ udp eq 464
+ description DOUBLE CHECK THE DC INTERNAL PORTS!
+!
+object-group network dcmaestro
+ 10.128.2.11 255.255.255.255
+!
+object-group network dctrends
+ 10.128.1.14 255.255.255.255
+!
+object-group network dmz_network
+ 10.128.1.0 255.255.255.0
+!
+object-group service ftp_ext
+ description LIMIT ME WHEN PASSIVE IS RESTRICTED
+ tcp eq ftp
+ tcp gt 1023
+ tcp eq ftp-data
+!
+object-group network ftpmis
+ 10.128.1.12 255.255.255.255
+!
+object-group network imail
+ 10.128.1.15 255.255.255.255
+!
+object-group network internal_network
+ 10.128.2.0 255.255.255.0
+!
+object-group service mail_server_ext
+ tcp eq smtp
+ tcp eq pop3
+ tcp eq 143
+!
+object-group network mailmaestro
+ 10.128.1.10 255.255.255.255
+!
+object-group network owncloud
+ 10.128.2.13 255.255.255.255
+!
+object-group service owncloud_int
+ tcp eq www
+ tcp eq 443
+!
+object-group network rdp_dmz_hosts
+ description PUT DMZ RDP HOSTS HERE
+!
+object-group network rdp_int_hosts
+ description PUT INTERNAL RDP HOSTS HERE
+!
+object-group network splunk
+ 10.128.2.18 255.255.255.255
+!
+object-group service splunk_int
+ tcp eq 8000
+ tcp eq 8089
+ tcp eq 9997
+!
+object-group network ssh_dmz_hosts
+ description PUT DMZ SSH HOSTS HERE
+!
+object-group network ssh_int_hosts
+ description PUT INTERNAL SSH HOSTS HERE
+!
+object-group service web_server_ext
+ tcp eq www
+ tcp eq 443
+!
+object-group network wireless_network
+ 10.128.1.0 255.255.255.0
+!
+object-group network wwwgames
+ 10.128.1.13 255.255.255.255
+!
+object-group network wwwstreams
+ 10.128.1.11 255.255.255.255
+!
+object-group network db_using_servers
+ description SET DMZ SERVERS THAT USE THE DATABASE!
+!
+ip access-list extended admin_facing
+ permit tcp any any established
+ permit udp host 8.8.8.8 eq domain any
+ permit udp object-group internal_network eq domain object-group admin_network
+ permit object-group dc_int object-group dcmaestro object-group admin_network
+ deny   ip any any log
+ip access-list extended dmz_facing
+ permit tcp any any established
+ permit object-group mail_server_ext any object-group imail
+ permit object-group web_server_ext any object-group blog
+ permit object-group dc_ext any object-group dctrends
+ permit object-group mail_server_ext any object-group mailmaestro
+ permit object-group web_server_ext any object-group wwwstreams
+ permit object-group ftp_ext any object-group ftpmis
+ permit object-group web_server_ext any object-group wwwgames
+ permit tcp object-group admin_network object-group ssh_dmz_hosts eq 22
+ permit tcp object-group admin_network object-group rdp_dmz_hosts eq 3389
+ deny   ip any any log
+ip access-list extended int_facing
+ permit tcp any any established
+ permit object-group db_int any object-group db_using_servers
+ permit object-group dc_int object-group admin_network object-group dcmaestro
+ permit object-group splunk_int object-group admin_network object-group splunk
+ permit object-group splunk_int object-group dmz_network object-group splunk
+ permit object-group owncloud_int object-group admin_network object-group internal_network
+ permit tcp object-group admin_network object-group rdp_int_hosts eq 3389
+ permit tcp object-group admin_network object-group ssh_int_hosts eq 22
+ deny   ip any any log
+!

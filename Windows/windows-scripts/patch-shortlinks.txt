@@ -1,0 +1,11 @@
+Important Microsoft Patches
+MS08-067
+http://goo.gl/0C4DLl
+MS06-040
+http://goo.gl/6LqrHH
+MS12-020
+http://goo.gl/dxpsgd
+MS03-026
+http://goo.gl/7E1jFV
+MS09-050
+http://goo.gl/YweHS5
