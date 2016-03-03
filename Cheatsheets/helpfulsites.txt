@@ -4,8 +4,10 @@ http://cb.vu/unixtoolbox.xhtml					//linux commands
 
 ============== NETWORKING ====================
 http://packetlife.net/library/cheat-sheets/			//networking cheat sheets
+https://www.youtube.com/watch?v=TdYTbLdBIm4			//basic Palo Alto setup
 
 
 ============== LINUX HARDENING ===============
 http://www.cyberciti.biz/faq/linux-show-what-cron-jobs-are-setup/	//see cron jobs
+
 
