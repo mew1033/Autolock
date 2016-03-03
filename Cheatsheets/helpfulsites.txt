@@ -1,0 +1,11 @@
+============== CHEATSHEETS ===================
+http://cb.vu/unixtoolbox.xhtml					//linux commands
+
+
+============== NETWORKING ====================
+http://packetlife.net/library/cheat-sheets/			//networking cheat sheets
+
+
+============== LINUX HARDENING ===============
+http://www.cyberciti.biz/faq/linux-show-what-cron-jobs-are-setup/	//see cron jobs
+
